@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    max-width: 100px;
+    height: auto;
+}
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+nav ul li {
+    margin-right: 20px;
+}
+nav ul li:last-child {
+    margin-right: 0;
+}
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    transition: color 0.3s;
+}
+nav ul li a:hover {
+    color: #ffc107;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .logo {
+        margin-bottom: 10px;
+    }
+    nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    nav ul li {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+.slider {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+}
+.slides {
+    display: flex;
+    transition: transform 0.5s ease;
+    width: 300%; /* nombre d'images * 100% */
+}
+.slide {
+    width: 33.33%; /* 100% / nombre d'images */
+    float: left;
+}
+img {
+    width: 100%;
+    height: auto;
+}
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 10px;
+}
+.prev {
+    left: 0;
+}
+.next {
+    right: 0;
+}
+/* Ajout de styles pour le focus sur les flèches */
+.prev:focus, .next:focus {
+    outline: none;
+}
+/* Utilisation de :target pour changer l'image active */
+#slide1:target ~ .slides {
+    transform: translateX(0%);
+}
+#slide2:target ~ .slides {
+    transform: translateX(-100%);
+}
+#slide3:target ~ .slides {
+    transform: translateX(-200%);
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    height: 50vh;
+}
+.container img {
+max-width: 100%; /* Les images ne dépasseront jamais la largeur de leur conteneur */
+height: auto; /* Garantit que la proportion hauteur/largeur reste intacte */
+margin-bottom: 10px; /* Espacement entre les images */
+}

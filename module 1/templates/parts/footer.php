@@ -1,4 +1,4 @@
-<footer>
+<footer id="legal">
     <p>
         <a href="mention.php">Mention legales</a>
     </p>

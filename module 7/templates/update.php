@@ -3,8 +3,8 @@
         header("Location: index.php");
         exit();
     }
-    
-    $userInfo = getUserInfos($_SESSION['user_id']);
+    $db = new dbConnect();
+    $userInfo = $db->getUserInfos($_SESSION['user_id']);
 ?>
 
 <main>

@@ -5,7 +5,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 // Récupérer les informations de l'utilisateur connecté
-$userInfo = getUserInfos($_SESSION['user_id']);
+$db = new dbConnect();
+$userInfo = $db->getUserInfos($_SESSION['user_id']);
 include_once 'templates/parts/header.php';
 ?>
 <main>
@@ -16,7 +17,7 @@ include_once 'templates/parts/header.php';
             // Récupérer l'ID de l'utilisateur à partir de la session ou d'une autre source
             $userID = $_SESSION['user_id'];
             // Appeler la fonction getUserInfos pour obtenir les informations de l'utilisateur
-            $userInfo = getUserInfos($userID);
+            $userInfo = $db->getUserInfos($userID);
             // Utiliser les informations récupérées
             echo "Nom: " . $userInfo['nom'];
             echo "Prénom: " . $userInfo['prenom'];

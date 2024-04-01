@@ -23,7 +23,11 @@ function handleRegisterAction() {
             include_once 'templates/register.php';
         } else {
             // Appeler la fonction pour enregistrer l'utilisateur
-            $error = registerUser($nom, $prenom, $adresse, $email, $password, $confirmPassword);
+
+            $db = new dbConnect();
+            $error = $db->registerUser($nom, $prenom, $adresse, $email, $password, $confirmPassword);
+
+            //$error = registerUser($nom, $prenom, $adresse, $email, $password, $confirmPassword);
 
             // Si l'enregistrement est réussi, rediriger vers la page de connexion
             if ($error === true) {
@@ -50,7 +54,11 @@ function handleLoginAction() {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];
 
-        $error = loginUser($email, $password);
+
+        $db = new dbConnect();
+        $error = $db->loginUser($email, $password);
+
+
 
         if($error === true){
             header("Location: index.php?action=dashboard");
@@ -82,8 +90,9 @@ function handleUpdateAction() {
             $data['errors'] = $errors;
             include_once 'templates/update.php';
         } else {
-
-            $error = updateUserInfo($id, $nom, $prenom,$adresse, $email, $password, $confirmPassword);
+            
+            $db = new dbConnect();
+            $error = $db->updateUserInfo($id, $nom, $prenom,$adresse, $email, $password, $confirmPassword);
 
             if ($error === true) {
                 header("Location: index.php?action=dashboard");
@@ -104,7 +113,10 @@ function handleCloseAction() {
 
         functions\verifyCsrfToken();
 
-        closeAccount($id);
+
+        $db = new dbConnect();
+        $db->closeAccount($id);
+        
 
         session_destroy();
 

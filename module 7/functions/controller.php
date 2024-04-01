@@ -25,24 +25,27 @@ function controller() {
             functions\verifyCsrfToken();
         }
 
+        $control = new controller();
+
+        
         switch ($action) {
             case 'register':
-                handleRegisterAction();
+                $control->handleRegisterAction();
                 break;
             case 'login':
-                handleLoginAction();
+                $control->handleLoginAction();
                 break;
             case 'dashboard':
                 include_once 'templates/dashboard.php';
                 break;
             case 'update':
-                handleUpdateAction();
+                $control->handleUpdateAction();
                 break;
             case 'close':
-                handleCloseAction();
+                $control->handleCloseAction();
                 break;
             case 'logout':
-                handleLogoutAction();
+                $control->handleLogoutAction();
                 break;
             default:
                 include_once 'templates/home.php';

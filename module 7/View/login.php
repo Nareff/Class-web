@@ -1,6 +1,8 @@
 <!-- login.php -->
 <?php 
-include_once 'parts/header.php'; ?>
+include_once 'templates/parts/header.php';
+include_once 'Security/CsrfToken.php'; ?>
+
 <main>
     <section>
         <h1>Connexion</h1>
@@ -8,7 +10,8 @@ include_once 'parts/header.php'; ?>
             <?php if (isset($_SESSION['csrf_token'])) : ?>
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             <?php else : ?>
-                <?php functions\generateCsrfToken(); ?>
+                <?php $token = new CsrfToken();
+                $token->generateCsrfToken(); ?>
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             <?php endif; ?>
             <label for="email">Email:</label>
@@ -25,4 +28,4 @@ include_once 'parts/header.php'; ?>
     </section>
 </main>
 
-<?php include_once 'parts/footer.php'; ?>
+<?php include_once 'templates/parts/footer.php'; ?>

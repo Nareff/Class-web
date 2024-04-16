@@ -1,32 +1,41 @@
 <?php
+include_once 'Service/UserRegService.php';
+include_once 'Repository/UserRepository.php';
 
-class controller{
+class service{
     public function handleRegisterAction() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Vérifier le jeton CSRF
-            functions\verifyCsrfToken();
+            $token = new CsrfToken();
+            $token->verifyCsrfToken();
+
+            $sec = new Security(htmlspecialchars($_POST['nom'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['prenom'])
+            ,htmlspecialchars($_POST['adresse']),filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
+            $_POST['password'],$_POST['confirm_password']);
     
             // Récupérer les données du formulaire
-            $nom = functions\sanitizeInput($_POST['nom']);
+            /*$nom = $sec->sanitizeInput($_POST['nom']);
             $prenom = functions\sanitizeInput($_POST['prenom']);
             $adresse = functions\sanitizeInput($_POST['adresse']);
             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
             $password = $_POST['password'];
-            $confirmPassword = $_POST['confirm_password'];
+            $confirmPassword = $_POST['confirm_password'];*/
     
             // Valider le formulaire
-            $errors = functions\validateRegistrationForm($nom, $prenom, $adresse, $email, $password, $confirmPassword);
+            $errors = $sec->validateRegistrationForm();
     
             // Si des erreurs sont présentes, afficher le formulaire avec les erreurs
             if (!empty($errors)) {
                 // Ajouter les erreurs au tableau de données pour les afficher dans le formulaire
                 $data['errors'] = $errors;
-                include_once 'templates/register.php';
+                include_once 'View/register.php';
             } else {
                 // Appeler la fonction pour enregistrer l'utilisateur
     
-                $db = new dbConnect();
-                $error = $db->registerUser($nom, $prenom, $adresse, $email, $password, $confirmPassword);
+                $use = new UserRegService(htmlspecialchars($_POST['nom'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['prenom'])
+                ,htmlspecialchars($_POST['adresse']),filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
+                $_POST['password'],$_POST['confirm_password']);
+                $error = $use->registerUser();
     
                 //$error = registerUser($nom, $prenom, $adresse, $email, $password, $confirmPassword);
     
@@ -38,73 +47,99 @@ class controller{
                     // En cas d'erreur, afficher le message d'erreur sur la page d'inscription
                     // Ajouter le message d'erreur au tableau de données pour l'afficher dans le formulaire
                     $data['error'] = $error;
-                    include_once 'templates/register.php';
+                    include_once 'View/register.php';
                 }
             }
         } else {
             // Afficher le formulaire d'inscription si la requête n'est pas de type POST
-            include_once 'templates/register.php';
+            include_once 'View/register.php';
         }
     }
     
     public function handleLoginAction() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Vérifier le jeton CSRF ici avant d'appeler loginUser
-            functions\verifyCsrfToken();
+            $token = new CsrfToken();
+            $token->verifyCsrfToken();
     
             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
             $password = $_POST['password'];
     
     
-            $db = new dbConnect();
-            $error = $db->loginUser($email, $password);
-    
-    
+            $pdo = dbConnect();
+            $yu = new UserRepository($email, $password);
+            $error = $yu->loginUser($pdo);   
     
             if($error === true){
                 header("Location: index.php?action=dashboard");
                 exit();
             } else {
-                include_once 'templates/login.php';
+                include_once 'View/login.php';
             }
         } else {
-            include_once 'templates/login.php';
+            include_once 'View/login.php';
         }
     }
     
     public function handleUpdateAction() {
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-            \functions\verifyCsrfToken();
+            $token = new CsrfToken();
+            $token->verifyCsrfToken();
     
             $id = $_SESSION['user_id'];
-            $nom = functions\sanitizeInput($_POST['nom']);
+
+            $sec = new Security(htmlspecialchars($_POST['nom'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['prenom'])
+            ,htmlspecialchars($_POST['adresse']),filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
+            $_POST['password'],$_POST['confirm_password']);
+
+            /*$nom = functions\sanitizeInput($_POST['nom']);
             $prenom = functions\sanitizeInput($_POST['prenom']);
             $adresse = functions\sanitizeInput($_POST['adresse']);
             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
             $password = $_POST['password'];
-            $confirmPassword = $_POST['confirm_password'];
+            $confirmPassword = $_POST['confirm_password'];*/
     
-            $errors = functions\validateRegistrationForm($nom, $prenom, $adresse, $email, $password, $confirmPassword);
+            $errors = $sec->validateRegistrationForm();
     
             if (!empty($errors)) {
                 $data['errors'] = $errors;
-                include_once 'templates/update.php';
+                include_once 'View/update.php';
             } else {
                 
-                $db = new dbConnect();
-                $error = $db->updateUserInfo($id, $nom, $prenom,$adresse, $email, $password, $confirmPassword);
+                $db = dbConnect();
+                $use = new UserRegService(htmlspecialchars($_POST['nom'], ENT_QUOTES, 'UTF-8'),htmlspecialchars($_POST['prenom'])
+                ,htmlspecialchars($_POST['adresse']),filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
+                $_POST['password'],$_POST['confirm_password']);
+                $error = $use->updateUserInfo();
+                
     
                 if ($error === true) {
                     header("Location: index.php?action=dashboard");
                     exit();
                 } else {
-                    include_once 'templates/update.php';
+                    include_once 'View/update.php';
                 }
             }
     
         } else {
-            include_once 'templates/update.php';
+            include_once 'View/update.php';
+        }
+    }
+    public function closeAccount($id,$pdo) {       
+    
+        try {
+            // Supprimer le compte de l'utilisateur (Requête préparée pour prévenir l'injection SQL)
+            $stmt = $pdo->prepare("DELETE FROM utilisateurs WHERE id = ?");
+            $stmt->execute([$id]);
+    
+            // Déconnecter l'utilisateur et rediriger vers la page d'accueil
+            session_destroy();
+            header("Location: index.php");
+            exit();
+        } catch (Exception $e) {
+            throw new Exception("Erreur lors de la fermeture du compte de l'utilisateur : " . $e->getMessage());
         }
     }
     
@@ -112,11 +147,13 @@ class controller{
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_SESSION['user_id'];
     
-            functions\verifyCsrfToken();
+            $token = new CsrfToken();
+            $token->verifyCsrfToken();
     
     
-            $db = new dbConnect();
-            $db->closeAccount($id);
+            $pdo = dbConnect();
+            $serv = new Service();
+            $serv->closeAccount($id,$pdo);
     
     
             session_destroy();

@@ -1,11 +1,15 @@
 <?php
+require_once 'Service/AuthService.php';
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
 }
 // Récupérer les informations de l'utilisateur connecté
-$db = new dbConnect();
+//$db = dbConnect();
+$db = new AuthService();
+
 $userInfo = $db->getUserInfos($_SESSION['user_id']);
 include_once 'templates/parts/header.php';
 ?>
@@ -26,7 +30,7 @@ include_once 'templates/parts/header.php';
         ?>
         <!--Supprimer le compte -->
         <form action="index.php?action=close" method="post">
-            <input type="hidden" name="csrf_token" value="<?= functions\sanitizeInput($_SESSION['csrf_token']); ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
             <button class="close-button" type="submit" name="delete_user">Supprimer mon compte</button>
         </form>
     </section>

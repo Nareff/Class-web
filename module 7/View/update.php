@@ -3,7 +3,8 @@
         header("Location: index.php");
         exit();
     }
-    $db = new dbConnect();
+    require_once 'Service/AuthService.php';
+    $db = new AuthService();
     $userInfo = $db->getUserInfos($_SESSION['user_id']);
 ?>
 
@@ -13,22 +14,22 @@
         <form action="index.php?action=update" method="post">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             <label for="nom">Nom:</label>
-            <input type="text" id="nom" name="nom" value="<?= functions\sanitizeInput($userInfo['nom']); ?>" required>
+            <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($userInfo['nom'], ENT_QUOTES, 'UTF-8'); ?>" required>
             <?php if (isset($data['errors']['nom'])) : ?>
                 <p class="error-message"><?php echo $data['errors']['nom']; ?></p>
             <?php endif; ?>
             <label for="prenom">Prénom:</label>
-            <input type="text" id="prenom" name="prenom" value="<?= functions\sanitizeInput($userInfo['prenom']); ?>" required>
+            <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($userInfo['prenom'], ENT_QUOTES, 'UTF-8'); ?>" required>
             <?php if (isset($data['errors']['prenom'])) : ?>
                 <p class="error-message"><?php echo $data['errors']['prenom']; ?></p>
             <?php endif; ?>
             <label for="adresse">Adresse:</label>
-            <input type="text" id="adresse" name="adresse" required value="<?= functions\sanitizeInput($userInfo['adresse']); ?>" required>
+            <input type="text" id="adresse" name="adresse" required value="<?= htmlspecialchars($userInfo['adresse'], ENT_QUOTES, 'UTF-8'); ?>" required>
             <?php if (isset($data['errors']['adresse'])) : ?>
                 <p class="error-message"><?php echo $data['errors']['adresse']; ?></p>
             <?php endif; ?>
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<?= functions\sanitizeInput($userInfo['email']); ?>" required>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($userInfo['email'], ENT_QUOTES, 'UTF-8'); ?>" required>
             <?php if (isset($data['errors']['email'])) : ?>
                 <p class="error-message"><?php echo $data['errors']['email']; ?></p>
             <?php endif; ?>

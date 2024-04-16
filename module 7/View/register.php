@@ -5,7 +5,8 @@
                 <?php if (isset($_SESSION['csrf_token'])) : ?>
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <?php else : ?>
-                    <?php functions\generateCsrfToken(); ?>
+                    <?php $token = new CsrfToken();
+                    $token->generateCsrfToken(); ?>
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <?php endif; ?>
                 <label for="nom">Nom:</label>
